@@ -1,0 +1,86 @@
+Vorbemerkung: NX ist harter Overkill für unseren Anwendungsfall und deshalb recht schwierig zu bedienen.
+Wichtig fürs Verständnis sind die verschiedenen Bäume im Operation Navigator: Geometrie, Programme und Operationen haben jeweils eine Hierarchie, jedes Objekt erbt die Daten vom übergeordneten Objekt.
+
+
+Drehteile sollten so angelegt werden, dass sie um die Z-Achse rotiert sind, oder müssen beim Einfügen über "Move Component" entsprechend gedreht werden.
+
+New Manufacturing -> Reference Existing Part
+(oder Start - Manufacturing, und turning template auswählen
+
+Fenster Operation Navigator
+Rechtsklick Geometry View
+MCS_MILL entfernen
+
+Spindelkosy anlegen:
+- Rechtsklick Create Geometry
+- turning MCS_SPINDLE: Nullpunkt und ZM-Achsen-(Drehachsen-)-Richtung festlegen. Üblicherweise ZM nach rechts, XM nach vorne
+- Lathe Work Plane: ZM-XM (d.h. im NC Code wird X und Z verwendet)
+
+Werkstück:
+- Darin wird automagisch ein Werkstück WORKPIECE angelegt, das eine Drehkontur TURNING_WORKPIECE enthält.
+- WORKPIECE bearbeiten, und Soll-Geometrie festlegen
+- (hier das Rohteil festlegen bringt unlogischerweise nichts!)
+
+Drehkontur:
+- TURNING_WORKPIECE bearbeiten und Rohteil festlegen: Stangenrohmaterial, L und D eingeben, Startposition eingeben und "zeige Rohteil" anklicken. Wenn nichts sichtbares passiert, die Ansicht ein wenig drehen, oder das Rohteil größer stellen.
+- Das Rohteil sollte an der Futterseite (für eventuelles Abstechen) ausreichend länger und gegenüber (für Plandrehen) ein bisschen länger sein.
+
+WICHTIG, nicht selbsterklärend:
+Freifahrpunkte (Avoidance) festlegen: (TODO eindeutschen, ich hab nur englisches NX)
+- Rechtsklick auf TURNING_WORKPIECE -> Insert -> Geometry -> Avoidance
+- From Point als gefahrlosen Parkpunkt festlegen (in positiver XM und ZM Richtung etwas weg vom Werkstück)
+- Motion of Start to Engage: Axial-Radial!
+- ebenso einen Return-Point auf oder minimal X-neben dem From-Point (Motion to Return: Radial-Axial!) als gefahrlosen Endpunkt.
+- OBACHT: Beim Anlegen von Operationen sicherstellen, dass diese die Avoidance verwenden
+- !!! OBACHT !!!: Ohne From- und Return-Point kann zwischen zwei Werkstückwegen ein undefinierter Eilgangpfad quer durchs Werkstück resultieren! Dieser wird auch nicht in der Simulation angezeigt.
+
+Wichtig ist immer, dass jede Operation am gleichen Punkt außerhalb startet und am Ende auch wieder dort hinfährt. Sonst "springt" die Position zwischen den zwei Operationen, was die Simulation nicht merkt, und im worst-case in der Praxis ein Eilgang quer durchs Werkstück ist!
+Für Innendrehen oder sonstige Sonderoperationen muss ggf. eine andere (weitere/untergeordnete) Avoidance angelegt werden, dort z.B. weitere Zwischenpunkte zum An-/Abfahren in das Werkstückinnere einfügen.
+
+Optional: Containment
+- unter der Avoidance noch ein Containment anlegen, um für alle dem untergeordneten Operationen (siehe Geometry View) den bearbeiteten Bereich zu begrenzen (kann man aber auch für jede Operation einzeln, am Besten probiert man die Einstellungen in einer Pseudo-Operation aus und legt erst dann ein Containment an)
+
+Werkzeug:
+- Create Tool: Tool (Geometrie der Wendeschneidplatte, Werkzeugnummer -- ungleich null!) einstellen, Halter aktivieren und einstellen
+- Machine Tool View -> CARRIER -> ganz runterscrollen, da ist jetzt das angelegte Werkzeug. Evtl. umbenennen.
+
+!!! OBACHT !!!: Das Tool erscheint an der XM-ZM-Ebene gespiegelt (als würde man von unten durch den Halter auf die WSP gucken), da NX von einer Drehbank mit Werkzeug von hinten ausgeht. Wegen der Rotationssymmetrie geht es aber trotzdem, wenn man in der Drehbank das anders-händige Werkzeug nimmt, das in der XM-ZM-Ebene gleich aussieht.
+
+Operation:
+- Program Order View.
+- Operation erzeugen: turning -> ROUGH_TURN_OD, Tool ..., Geometrie AVOIDANCE (oder das unterste Element im Geometriebaum, auf das man sich beziehen will)
+- Bei Cut Regions kriegt man eine Vorschau aller mit dem gewählten Werkzeug erreichbaren Bereiche. Hinterschnitte werden automatisch vermieden. Es lässt sich der zu bearbeitende Bereich eingrenzen. (um für mehrere Wkzwege die gleiche Begrenzung zu nehmen, ein Containment anlegen und in Geometry View die Wkzwege dort reinschieben. TODO: wann übernehmen diese die Einstellungen? Evtl muss man sie neu anlegen.)
+- Kollisionen bei den Freifahrbewegungen sind möglich, teils werden sie mit einer Warnmeldung gezeigt, verlassen sollte man sich darauf nicht. Deshalb muss unbedingt wie oben beschrieben die Avoidance verwendet werden.
+
+Schnittdaten: 
+
+- SMM ist Schnittgeschwindigkeit vc in m/min. Dabei max. RPM festlegen (5000 möglich, wenn Werstück starr und ausgewuchtet genug). Modus SFM ist zöllig und doof, nicht nutzen. 
+(dahinterstehende Formel: vc=2*Pi*n*r)
+- Vorschub als spezifischen Vorschub (mmpr = mm/U) angeben
+- Alternativ gehen auch Absolutangaben: Vorschub (mmpm = mm/min) und Drehzahl (RPM)
+
+- Zustellung Schnitttiefe: Constant, oder für eine intelligentere Aufteilung: Variable Average mit Min=75% ... Max=100% des gewünschten Werts
+
+- Für einen späteren Schlichtgang in Cutting Parameters: Profiling Stock ein Aufmaß eingeben
+
+- Generate. Bei Warnmeldungen über Kollisionen: Kurz nachdenken und den From Point anpassen.
+
+Postprozessor:
+- Program Order View
+- Jetzt auf rechtsklick aufs Programm, Post Process, Postproc linuxcnc_... wählen 
+(Wenn nur eine Operation ausgewählt ist, wird nur diese alleine erzeugt)
+
+
+Spezialdinge:
+
+Gewindedrehen:
+
+geht nicht automagisch aus Features heraus. In der Datei erstmal kein Gewinde anlegen, sondern nur die "Außenkontur" und kleine Freistiche für Start/Ende.
+
+Crest Line (Schulterlinie?): die Linie außen längs am Gewinde auswählen
+Depth="Depth and Angle", Tiefe einstellen, Angle from XC i.d.R. 0°, muss entlang der Drehachse zeigen. Ungleich 0° für kegelige Gewinde.
+Offset: Start und End Offset auf ~1-2*Steigung einstellen
+Cutting Parameters / Feeds and Speeds: Steigung und RPM einstellen. Die Eingabe für eine Vorschubgeschwindigkeit ist bedeutungslos.
+Generate, gucken ob der Pfad richtig liegt und genug Start und Ende in der Luft liegt (das Werkstück ausblenden oder mit Rechtsklick, Edit Display, Translucency auf ziemlich durchsichtig stellen)
+
+Maschinensimulation funktioniert garnicht (oder teils komisch), Verify Toolpath zeigt zumindest die richtigen Abläufe an, auch wenn 2D Material Removal nix zeigt.
