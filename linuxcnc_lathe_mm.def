@@ -192,7 +192,7 @@ FORMATTING
   ADDRESS S 
   {
       FORMAT      Digit_5
-      FORCE       off
+      FORCE       always
       MAX         99999 Truncate
       MIN         0 Truncate
       LEADER      "S"
@@ -340,7 +340,7 @@ FORMATTING
   ADDRESS spindle_max_rpm 
   {
       FORMAT      Digit_5
-      FORCE       off
+      FORCE       always
       MAX         99999 Warning
       MIN         1 Warning
       LEADER      "D"

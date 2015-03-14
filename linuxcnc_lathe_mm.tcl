@@ -2,7 +2,7 @@
 #
 #  linuxcnc_lathe_mm.tcl -
 #
-#  Created by max  @  Sun Dec 28 17:56:34 2014 CET
+#  Created by Fablab  @  Samstag, 14. März 2015 00:32:55 Mitteleuropäische Zeit
 #  with Post Builder version  9.0.0.
 #
 ########################################################################
@@ -1885,6 +1885,11 @@ proc PB_CMD_spindle_sfm_prestart { } {
       MOM_force once G_spin M_spindle S
       MOM_do_template spindle_rpm_preset
    }
+
+# FIX: force spindle g-code output at next possible time
+global spindle_is_out
+set spindle_is_out 1234
+unset spindle_is_out
 }
 
 
