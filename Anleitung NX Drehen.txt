@@ -1,19 +1,33 @@
 Vorbemerkung: NX ist harter Overkill für unseren Anwendungsfall und deshalb recht schwierig zu bedienen.
-Wichtig fürs Verständnis sind die verschiedenen Bäume im Operation Navigator: Geometrie, Programme und Operationen haben jeweils eine Hierarchie, jedes Objekt erbt die Daten vom übergeordneten Objekt.
+Wichtig fürs Verständnis sind die verschiedenen Bäume im Operation Navigator: Geometrie, Programme und Operationen haben jeweils eine Hierarchie, jedes Objekt erbt die Daten vom übergeordneten Objekt. Die Reihenfolge wird in "Operationen" festgelegt.
 
 
-Drehteile sollten so angelegt werden, dass sie um die Z-Achse rotiert sind, oder müssen beim Einfügen über "Move Component" entsprechend gedreht werden.
+
+Drehteile sollten in der Konstruktion so angelegt werden:
+- um die X-Achse rotiert
+- Nullpunkt am linken Rand, also auf der Einspann-Seite des Werkstücks
+- UNKLAR: Reserve-Platz fürs Abstechen soll man mit konstruieren, damit man dort auch plandrehen kann.
+(alternativ: nur genau das konstruieren was man will und dann mit Containment dafür sorgen dass Schrupp-Operationen o.ä. nicht unnötig versuchen den Einspannbutzen wegzudrehen, sondern erst die Abstech-Operation)
+ansonsten kann man das Bauteil später in der Fertigung über "Move Component" drehen, oder das Maschinenkosy anders festlegen.
+
+Ein komplettes Beispiel findet sich unter examples/easy. (Dort wurden die Koordinaten ungünstig gewählt, geht aber trotzdem)
+
+TODO Werkzeuge und -halter anlegen, beschreiben wie man diese Bibliothek nutzt
+
+
+Fertigung:
+
 
 New Manufacturing -> Reference Existing Part
-(oder Start - Manufacturing, und turning template auswählen
+(oder Start - Manufacturing, und turning template auswählen)
 
 Fenster Operation Navigator
 Rechtsklick Geometry View
-MCS_MILL entfernen
+alle vorhandenen Objekte (MCS_MILL) entfernen
 
 Spindelkosy anlegen:
 - Rechtsklick Create Geometry
-- turning MCS_SPINDLE: Nullpunkt und ZM-Achsen-(Drehachsen-)-Richtung festlegen. Üblicherweise ZM nach rechts, XM nach vorne
+- turning MCS_SPINDLE: Standardeinstellungen sollten passen Nullpunkt und ZM-Achsen-(Drehachsen-)-Richtung festlegen. Üblicherweise ZM nach rechts, XM nach vorne. 
 - Lathe Work Plane: ZM-XM (d.h. im NC Code wird X und Z verwendet)
 
 Werkstück:
@@ -25,11 +39,11 @@ Drehkontur:
 - TURNING_WORKPIECE bearbeiten und Rohteil festlegen: Stangenrohmaterial, L und D eingeben, Startposition eingeben und "zeige Rohteil" anklicken. Wenn nichts sichtbares passiert, die Ansicht ein wenig drehen, oder das Rohteil größer stellen.
 - Das Rohteil sollte an der Futterseite (für eventuelles Abstechen) ausreichend länger und gegenüber (für Plandrehen) ein bisschen länger sein.
 
-WICHTIG, nicht selbsterklärend:
+WICHTIG, nicht selbsterklärend, sonst CRASH!
 Freifahrpunkte (Avoidance) festlegen: (TODO eindeutschen, ich hab nur englisches NX)
 - Rechtsklick auf TURNING_WORKPIECE -> Insert -> Geometry -> Avoidance
 - From Point als gefahrlosen Parkpunkt festlegen (in positiver XM und ZM Richtung etwas weg vom Werkstück)
-- Motion of Start to Engage: Axial-Radial!
+- Motion of Start to Engage: Axial-Radial! Start Point minimal neben From Point.
 - ebenso einen Return-Point auf oder minimal X-neben dem From-Point (Motion to Return: Radial-Axial!) als gefahrlosen Endpunkt.
 - OBACHT: Beim Anlegen von Operationen sicherstellen, dass diese die Avoidance verwenden
 - !!! OBACHT !!!: Ohne From- und Return-Point kann zwischen zwei Werkstückwegen ein undefinierter Eilgangpfad quer durchs Werkstück resultieren! Dieser wird auch nicht in der Simulation angezeigt.
@@ -43,8 +57,8 @@ Optional: Containment
 Werkzeug:
 - Create Tool: Tool (Geometrie der Wendeschneidplatte, Werkzeugnummer -- ungleich null!) einstellen, Halter aktivieren und einstellen
 - Machine Tool View -> CARRIER -> ganz runterscrollen, da ist jetzt das angelegte Werkzeug. Evtl. umbenennen.
-
-!!! OBACHT !!!: Das Tool erscheint an der XM-ZM-Ebene gespiegelt (als würde man von unten durch den Halter auf die WSP gucken), da NX von einer Drehbank mit Werkzeug von hinten ausgeht. Wegen der Rotationssymmetrie geht es aber trotzdem, wenn man in der Drehbank das anders-händige Werkzeug nimmt, das in der XM-ZM-Ebene gleich aussieht.
+Mit Ansicht ausrichten -> Oben erhält man eine sinnvolle Ansicht.
+!!! OBACHT !!!: Das Tool erscheint an der XM-ZM-Ebene gespiegelt (als würde man von unten durch den Halter auf die WSP gucken), da NX von einer Drehbank mit Werkzeug von hinten ("back-tool lathe") ausgeht. Wegen der Rotationssymmetrie geht es aber trotzdem, wenn man in der Drehbank das anders-händige Werkzeug nimmt, das in der XM-ZM-Ebene gleich aussieht.
 
 Operation:
 - Program Order View.
@@ -71,6 +85,12 @@ Postprozessor:
 (Wenn nur eine Operation ausgewählt ist, wird nur diese alleine erzeugt)
 
 
+
+
+
+
+
+
 Spezialdinge:
 
 Gewindedrehen:
@@ -82,5 +102,10 @@ Depth="Depth and Angle", Tiefe einstellen, Angle from XC i.d.R. 0°, muss entlan
 Offset: Start und End Offset auf ~1-2*Steigung einstellen
 Cutting Parameters / Feeds and Speeds: Steigung und RPM einstellen. Die Eingabe für eine Vorschubgeschwindigkeit ist bedeutungslos.
 Generate, gucken ob der Pfad richtig liegt und genug Start und Ende in der Luft liegt (das Werkstück ausblenden oder mit Rechtsklick, Edit Display, Translucency auf ziemlich durchsichtig stellen)
+
+
+
+
+
 
 Maschinensimulation funktioniert garnicht (oder teils komisch), Verify Toolpath zeigt zumindest die richtigen Abläufe an, auch wenn 2D Material Removal nix zeigt.
