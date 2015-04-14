@@ -18,6 +18,7 @@ FROM-Move wird zwangsweise am Anfang einer Op. ausgeführt (zuerst in Z und dann
 TODO:
 Delay Revolutions ist zur Zeit auf Delay seconds umgebogen
 G7/G8 Durchm/Radius Modus erzwingen
+Werkzeugwechsel in Praxis testen: Für Werkzeugwechsel Z ganz wegfahren? Oder besser den Nutzer zwingen, einen geeigneten (weiter entfernten) From Point zu setzen?
 
 WONTFIX:
 Wkz.nummer 0 sagt "bitte Wkz entnehmen"

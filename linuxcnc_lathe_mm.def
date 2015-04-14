@@ -96,7 +96,7 @@ FORMATTING
   ADDRESS G_dwell 
   {
       FORMAT      Digit_2
-      FORCE       off
+      FORCE       always
       LEADER      "G"
   }
 
