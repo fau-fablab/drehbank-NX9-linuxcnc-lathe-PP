@@ -666,9 +666,8 @@ FORMATTING
 
   BLOCK_TEMPLATE manual_tool_change_2 
   {
-       Text[(MSG, Pause fuer Werkzeugwechsel nach ]
+       Text[; Werkzeugwechsel nach ]
        T[$mom_tool_number]
-       Text[)]
   }
 
   BLOCK_TEMPLATE opstop 
@@ -802,6 +801,18 @@ FORMATTING
   BLOCK_TEMPLATE tool_preselect 
   {
        T[$mom_next_tool_number]
+  }
+
+  BLOCK_TEMPLATE auto_tool_change_2 
+  {
+       M_spindle[$mom_sys_spindle_direction_code(OFF)]
+  }
+
+  BLOCK_TEMPLATE auto_tool_change_3 
+  {
+       G_motion[$mom_sys_rapid_code]
+       G[53]
+       X[-1]
   }
 
   BLOCK_TEMPLATE post_cycle_set 

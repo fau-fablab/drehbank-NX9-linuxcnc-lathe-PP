@@ -2,7 +2,7 @@
 #
 #  linuxcnc_lathe_mm.tcl -
 #
-#  Created by Fablab  @  Dienstag, 14. April 2015 13:51:33 Mitteleuropäische Sommerzeit
+#  Created by Fablab  @  Donnerstag, 4. Juni 2015 02:20:20 Mitteleuropäische Sommerzeit
 #  with Post Builder version  9.0.0.
 #
 ########################################################################
@@ -1241,11 +1241,19 @@ proc PB_auto_tool_change { } {
 
    MOM_force Once T
    MOM_do_template manual_tool_change_2
-   PB_CMD_alignment_block
-   MOM_do_template stop
+   MOM_do_template auto_tool_change_2
+   MOM_force Once G_motion G X
+   MOM_do_template auto_tool_change_3
+   MOM_force Once G_motion Z
+   MOM_do_template from_move__zuerst_z_bewegen
    MOM_force Once T
    MOM_do_template manual_tool_change_1
    MOM_do_template auto_tool_change_1
+   MOM_force Once G_motion Z
+   MOM_do_template from_move__zuerst_z_bewegen
+   MOM_force Once X
+   MOM_do_template from_move
+   PB_CMD_alignment_block
 }
 
 
@@ -1284,11 +1292,19 @@ proc PB_manual_tool_change { } {
 #=============================================================
    MOM_force Once T
    MOM_do_template manual_tool_change_2
-   PB_CMD_alignment_block
-   MOM_do_template stop
+   MOM_do_template auto_tool_change_2
+   MOM_force Once G_motion G X
+   MOM_do_template auto_tool_change_3
+   MOM_force Once G_motion Z
+   MOM_do_template from_move__zuerst_z_bewegen
    MOM_force Once T
    MOM_do_template manual_tool_change_1
    MOM_do_template auto_tool_change_1
+   MOM_force Once G_motion Z
+   MOM_do_template from_move__zuerst_z_bewegen
+   MOM_force Once X
+   MOM_do_template from_move
+   PB_CMD_alignment_block
 }
 
 
@@ -1782,10 +1798,13 @@ proc PB_CMD_output_spindle { } {
   global mom_spindle_maximum_rpm
 
    if { ![info exists spindle_is_out] } {
+      MOM_output_literal "; Spindeldrehzahl setzen ($mom_spindle_mode) "
       if { ![string compare "RPM" $mom_spindle_mode] } {
          MOM_force once M_spindle S G_spin
          MOM_do_template spindle_rpm
-      } elseif { ![string compare "SFM" $mom_spindle_mode] || ![string compare "SMM" $mom_spindle_mode] } {
+      } elseif { ![string compare "SFM" $mom_spindle_mode] } {
+            MOM_abort "SFM wird nicht unterstuetzt, bitte SMM fuer konst. Schnittgeschwindigkeit verwenden."
+      } elseif { ![string compare "SMM" $mom_spindle_mode] } {
          MOM_force once M_spindle S G G_spin
 
          if { [info exists mom_spindle_maximum_rpm] && [expr $mom_spindle_maximum_rpm > 0] } {
@@ -1882,6 +1901,7 @@ proc PB_CMD_spindle_sfm_prestart { } {
 
    # Output preset instructions when spindle mode is SFM or SMM.
    if { ![string compare "SFM" $mom_spindle_mode] || ![string compare "SMM" $mom_spindle_mode] } {
+      MOM_output_literal "; Spindeldrehzahl Vorwahl"
       MOM_force once G_spin M_spindle S
       MOM_do_template spindle_rpm_preset
    }

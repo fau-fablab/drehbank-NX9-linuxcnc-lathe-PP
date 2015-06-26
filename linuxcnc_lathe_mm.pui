@@ -8,7 +8,7 @@
 #  <WARNING> The contents of this file should not be modified!               #
 #                                                                            #
 ##############################################################################
-#  Created by Fablab @ Dienstag, 14. April 2015 13:51:33 Mitteleuropäische Sommerzeit
+#  Created by Fablab @ Donnerstag, 4. Juni 2015 02:20:20 Mitteleuropäische Sommerzeit
 #  with Post Builder version 9.0.0.
 #============================================================================#
 
@@ -101,6 +101,23 @@ Saved with NX/Post Builder Version 9.0.0.0 on Samstag, 14. März 2015 00:32:55 M
 Saved with NX/Post Builder Version 9.0.0.0 on Dienstag, 14. April 2015 13:50:42 Mitteleuropäische Sommerzeit by Fablab.
 Saved with NX/Post Builder Version 9.0.0.0 on Dienstag, 14. April 2015 13:51:00 Mitteleuropäische Sommerzeit by Fablab.
 Saved with NX/Post Builder Version 9.0.0.0 on Dienstag, 14. April 2015 13:51:33 Mitteleuropäische Sommerzeit by Fablab.
+Saved with NX/Post Builder Version 9.0.0.0 on Donnerstag, 4. Juni 2015 01:11:37 Mitteleuropäische Sommerzeit by Fablab.
+Saved with NX/Post Builder Version 9.0.0.0 on Donnerstag, 4. Juni 2015 01:11:41 Mitteleuropäische Sommerzeit by Fablab.
+Saved with NX/Post Builder Version 9.0.0.0 on Donnerstag, 4. Juni 2015 01:13:46 Mitteleuropäische Sommerzeit by Fablab.
+Saved with NX/Post Builder Version 9.0.0.0 on Donnerstag, 4. Juni 2015 01:18:06 Mitteleuropäische Sommerzeit by Fablab.
+Saved with NX/Post Builder Version 9.0.0.0 on Donnerstag, 4. Juni 2015 01:19:32 Mitteleuropäische Sommerzeit by Fablab.
+Saved with NX/Post Builder Version 9.0.0.0 on Donnerstag, 4. Juni 2015 01:20:54 Mitteleuropäische Sommerzeit by Fablab.
+Saved with NX/Post Builder Version 9.0.0.0 on Donnerstag, 4. Juni 2015 01:21:47 Mitteleuropäische Sommerzeit by Fablab.
+Saved with NX/Post Builder Version 9.0.0.0 on Donnerstag, 4. Juni 2015 01:26:18 Mitteleuropäische Sommerzeit by Fablab.
+Saved with NX/Post Builder Version 9.0.0.0 on Donnerstag, 4. Juni 2015 01:28:36 Mitteleuropäische Sommerzeit by Fablab.
+Saved with NX/Post Builder Version 9.0.0.0 on Donnerstag, 4. Juni 2015 01:28:46 Mitteleuropäische Sommerzeit by Fablab.
+Saved with NX/Post Builder Version 9.0.0.0 on Donnerstag, 4. Juni 2015 01:29:03 Mitteleuropäische Sommerzeit by Fablab.
+Saved with NX/Post Builder Version 9.0.0.0 on Donnerstag, 4. Juni 2015 01:43:13 Mitteleuropäische Sommerzeit by Fablab.
+Saved with NX/Post Builder Version 9.0.0.0 on Donnerstag, 4. Juni 2015 01:48:43 Mitteleuropäische Sommerzeit by Fablab.
+Saved with NX/Post Builder Version 9.0.0.0 on Donnerstag, 4. Juni 2015 01:52:04 Mitteleuropäische Sommerzeit by Fablab.
+Saved with NX/Post Builder Version 9.0.0.0 on Donnerstag, 4. Juni 2015 02:13:51 Mitteleuropäische Sommerzeit by Fablab.
+Saved with NX/Post Builder Version 9.0.0.0 on Donnerstag, 4. Juni 2015 02:15:26 Mitteleuropäische Sommerzeit by Fablab.
+Saved with NX/Post Builder Version 9.0.0.0 on Donnerstag, 4. Juni 2015 02:20:20 Mitteleuropäische Sommerzeit by Fablab.
 #  HISTORY END
 ## POST INFORMATION END
 
@@ -316,8 +333,8 @@ Text              ""  0  "Text String"  0
 {Start of Path}            {start_of_path_1 start_of_path comment_123 start_of_path}  {$gPB(event,opr_start,start_path,name)}
 {From Move}                {from_move__comment from_move__zuerst_z_bewegen from_move}  {$gPB(event,opr_start,from_move,name)}
 {First Tool}               {}  {$gPB(event,opr_start,fst_tool,name)}
-{Auto Tool Change}         {manual_tool_change_2 PB_CMD_alignment_block stop manual_tool_change_1 auto_tool_change_1}  {$gPB(event,opr_start,auto_tc,name)}
-{Manual Tool Change}       {manual_tool_change_2 PB_CMD_alignment_block stop manual_tool_change_1 auto_tool_change_1}  {$gPB(event,opr_start,manual_tc,name)}
+{Auto Tool Change}         {manual_tool_change_2 auto_tool_change_2 auto_tool_change_3 from_move__zuerst_z_bewegen manual_tool_change_1 auto_tool_change_1 from_move__zuerst_z_bewegen from_move PB_CMD_alignment_block}  {$gPB(event,opr_start,auto_tc,name)}
+{Manual Tool Change}       {manual_tool_change_2 auto_tool_change_2 auto_tool_change_3 from_move__zuerst_z_bewegen manual_tool_change_1 auto_tool_change_1 from_move__zuerst_z_bewegen from_move PB_CMD_alignment_block}  {$gPB(event,opr_start,manual_tc,name)}
 {Initial Move}             {PB_CMD_spindle_sfm_prestart initial_move}  {$gPB(event,opr_start,init_move,name)}
 {First Move}               {PB_CMD_spindle_sfm_prestart}  {$gPB(event,opr_start,fst_move,name)}
 {Approach Move}            {}  {$gPB(event,opr_start,appro_move,name)}
@@ -402,10 +419,18 @@ Text              ""  0  "Text String"  0
         {2 NULL 0 {X}}
 {Auto Tool Change} \
         {0 NULL 0 {T}} \
-        {3 NULL 0 {T}}
+        {2 NULL 0 {G_motion G X}} \
+        {3 NULL 0 {G_motion Z}} \
+        {4 NULL 0 {T}} \
+        {6 NULL 0 {G_motion Z}} \
+        {7 NULL 0 {X}}
 {Manual Tool Change} \
         {0 NULL 0 {T}} \
-        {3 NULL 0 {T}}
+        {2 NULL 0 {G_motion G X}} \
+        {3 NULL 0 {G_motion Z}} \
+        {4 NULL 0 {T}} \
+        {6 NULL 0 {G_motion Z}} \
+        {7 NULL 0 {X}}
 {Initial Move} \
         {1 NULL 0 {F}}
 {Spindle CSS} \
